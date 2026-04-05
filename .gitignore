@@ -1,5 +1,6 @@
 .claude/
 .planning/
+CLAUDE.md
 *.pdf
 *.Zone.Identifier
 *:Zone.Identifier
