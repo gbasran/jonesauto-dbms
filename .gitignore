@@ -1,0 +1,8 @@
+.claude/
+.planning/
+*.pdf
+*.Zone.Identifier
+*:Zone.Identifier
+.env
+.DS_Store
+*.log
