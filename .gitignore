@@ -20,10 +20,6 @@ report/prep-guide.*
 .DS_Store
 *.log
 
-# dev scripts (not part of the project)
-test.sh
-startscript.sh
-
 # report build artifacts
 report/imgs/
 report/*.md
