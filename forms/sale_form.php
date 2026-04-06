@@ -21,9 +21,7 @@ $customers = mysqli_query($conn, $sql);
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Sell a Vehicle</h2>
 
@@ -31,7 +29,7 @@ $customers = mysqli_query($conn, $sql);
 
 <!-- vehicle -->
 <h3>Vehicle</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Vehicle:</td>
         <td>
@@ -47,7 +45,7 @@ $customers = mysqli_query($conn, $sql);
 
 <!-- sale details -->
 <h3>Sale Details</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Sale Date:</td>
         <td><input type="date" name="sale_date" required></td>
@@ -72,7 +70,7 @@ $customers = mysqli_query($conn, $sql);
 
 <!-- salesperson -->
 <h3>Salesperson</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Salesperson:</td>
         <td>
@@ -98,7 +96,7 @@ $customers = mysqli_query($conn, $sql);
 <label for="new_radio">New Customer</label>
 
 <div id="existing_customer">
-<table>
+<table class="form-table">
     <tr>
         <td>Customer:</td>
         <td>
@@ -114,7 +112,7 @@ $customers = mysqli_query($conn, $sql);
 </div>
 
 <div id="new_customer" style="display:none">
-<table>
+<table class="form-table">
     <tr>
         <td>First Name:</td>
         <td><input type="text" name="first_name"></td>

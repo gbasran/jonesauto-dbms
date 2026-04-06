@@ -1,9 +1,6 @@
 -- Lethbridge JonesAuto Database
 -- CPSC 3660 Course Project
 
-CREATE DATABASE IF NOT EXISTS jonesauto;
-USE jonesauto;
-
 -- employees table (buyers and salespeople)
 CREATE TABLE employees (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,

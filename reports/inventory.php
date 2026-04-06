@@ -12,9 +12,7 @@ $make_filter = isset($_GET['make_filter']) ? $_GET['make_filter'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Current Inventory</h2>
 

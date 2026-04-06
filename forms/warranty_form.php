@@ -16,9 +16,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Add Warranty</h2>
 
@@ -29,7 +27,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 <form method="POST" action="../process/process_warranty.php">
 
 <!-- sale selection -->
-<table>
+<table class="form-table">
     <tr>
         <td>Sale:</td>
         <td>
@@ -54,7 +52,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 
 <!-- warranty info -->
 <h3>Warranty Details</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Warranty Date:</td>
         <td><input type="date" name="warranty_sale_date"></td>

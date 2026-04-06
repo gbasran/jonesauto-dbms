@@ -13,9 +13,7 @@ $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Sales Report</h2>
 

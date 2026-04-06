@@ -13,9 +13,7 @@ $make_input = isset($_GET['make_input']) ? $_GET['make_input'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Business Queries</h2>
 

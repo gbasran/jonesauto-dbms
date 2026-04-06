@@ -13,9 +13,7 @@ $buyers = mysqli_query($conn, $sql);
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Record a Vehicle Purchase</h2>
 
@@ -23,7 +21,7 @@ $buyers = mysqli_query($conn, $sql);
 
 <!-- purchase info -->
 <h3>Purchase Info</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Purchase Date:</td>
         <td><input type="date" name="purchase_date" required></td>
@@ -54,7 +52,7 @@ $buyers = mysqli_query($conn, $sql);
 
 <!-- vehicle info -->
 <h3>Vehicle Info</h3>
-<table>
+<table class="form-table">
     <tr>
         <td>Make:</td>
         <td><input type="text" name="make" required></td>

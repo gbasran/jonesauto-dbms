@@ -12,9 +12,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Add New Employee</h2>
 
@@ -25,7 +23,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 <?php } ?>
 
 <form method="POST" action="../process/process_employee.php">
-<table>
+<table class="form-table">
     <tr>
         <td>First Name:</td>
         <td><input type="text" name="first_name" required></td>

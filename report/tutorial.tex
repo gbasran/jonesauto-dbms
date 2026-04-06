@@ -2,7 +2,6 @@
 \usepackage{geometry}
 \usepackage{parskip}
 \usepackage{listings}
-\usepackage{xcolor}
 
 \geometry{margin=1in}
 
@@ -13,85 +12,97 @@
     numbers=none,
 }
 
-\title{CPSC 3660 --- Course Project\\[0.3cm]
-\Large JonesAuto DBMS --- User Tutorial}
-\author{[Student Name] --- [Student ID]}
-\date{April 8, 2026}
-
 \begin{document}
-\maketitle
 
-\section{Setting Up WAMP}
+\begin{center}
+{\Large \textbf{JonesAuto DBMS: User Tutorial}}\\[0.3cm]
+CPSC 3660\\[0.2cm]
+Gurmann Basran
+\end{center}
+\vspace{0.3cm}
 
-Download and install WAMP Server from \texttt{wampserver.com}. Once it is installed, launch it from the Start menu or the desktop shortcut. You will see a tray icon in the bottom right of your screen. When it turns green, that means Apache and MySQL are both running and you are good to go. If it is orange, one of the services did not start; try right-clicking the icon and restarting all services.
+\section{Getting Started}
 
-You can verify it is working by opening your browser and going to \texttt{http://localhost/}. You should see the WAMP default page.
+The system runs on PHP and MySQL. There are two ways to set it up depending on what you have installed.
 
-\section{Importing the Database}
+\subsection{Option 1: Using the startup script (recommended)}
+
+If you have WSL (Windows Subsystem for Linux) or a Linux machine, this is the easiest way. Open a terminal, go to the project folder, and run:
+
+\begin{lstlisting}[style=code]
+./startscript.sh
+\end{lstlisting}
+
+The script will install PHP and MySQL if they are not already installed, set up the database with sample data, and start a local web server. Once you see ``Ready! Open http://localhost:8000'' you can open that URL in your browser.
+
+To stop the server, press Ctrl+C in the terminal.
+
+To run the automated tests (checks that all pages load, forms submit, and queries return data):
+
+\begin{lstlisting}[style=code]
+./test.sh
+\end{lstlisting}
+
+\subsection{Option 2: Using WAMP}
+
+If you prefer WAMP on Windows:
 
 \begin{enumerate}
-  \item Open phpMyAdmin by going to \texttt{http://localhost/phpmyadmin/} in your browser. The default login is username \texttt{root} with a blank password.
-
-  \item Create the database: click ``New'' in the left sidebar, type \texttt{jonesauto} as the database name, and click ``Create.''
-
-  \item With the \texttt{jonesauto} database selected, click the ``Import'' tab at the top. Click ``Choose File,'' select \texttt{db\_setup.sql} from the project folder, and click ``Go.'' This creates all 10 tables.
-
-  \item Run the import again with \texttt{db\_seed.sql}. This loads the sample data (employees, vehicles, customers, purchases, sales, payments, etc.) so you have something to work with right away.
+  \item Install WAMP Server from \texttt{wampserver.com}
+  \item Copy the project folder to \texttt{C:\textbackslash wamp64\textbackslash www\textbackslash JonesAuto\textbackslash}
+  \item Start WAMP and wait for the tray icon to turn green
+  \item Open phpMyAdmin at \texttt{http://localhost/phpmyadmin/} (login: root, no password)
+  \item Create a database called \texttt{jonesauto}
+  \item Import \texttt{db\_setup.sql} first (creates the tables), then \texttt{db\_seed.sql} (loads sample data)
+  \item Open \texttt{http://localhost/JonesAuto/} in your browser
 \end{enumerate}
 
-\section{Opening the System}
+\section{Home Page}
 
-Copy the project folder to \texttt{C:\textbackslash wamp64\textbackslash www\textbackslash} (or \texttt{C:\textbackslash wamp\textbackslash www\textbackslash} depending on your install). Then open \texttt{http://localhost/CPSC3660\_Project/} in your browser. You will see the home page with links to all the forms, reports, and the queries page.
+When you open the system you will see the home page with three stats at the top showing how many cars are available, how many customers are in the system, and how many sales have been made. Below that are links to all the forms on the left and all the reports on the right. There is also a link to the queries page at the bottom.
+
+The navigation bar at the top of every page has dropdown menus for Forms and Reports so you can get to any page from anywhere.
 
 \section{Using the Forms}
 
-There are 6 input forms for entering data. Here is a quick overview of each one.
+There are 6 input forms. Here is what each one does.
 
-\textbf{Purchase Form} (\texttt{forms/purchase\_form.php}): Select a buyer employee from the dropdown. Fill in the purchase details (date, location, seller/dealer) and vehicle info (make, model, year, color, miles, etc.). You can add up to 5 repair problems at the bottom. Click Submit and it saves the vehicle, purchase, and repair records to the database.
+\textbf{Purchase Form} -> Records a car bought at auction. Pick a buyer from the dropdown, fill in the purchase info and vehicle details, and add up to 5 repair problems at the bottom. Click ``Record Purchase'' to save.
 
-\textbf{Sale Form} (\texttt{forms/sale\_form.php}): Pick whether the customer already exists or is new. If they are new, fill in their info (name, phone, address, etc.). Select an available vehicle from the dropdown, enter the sale details (price, down payment, commission), and add up to 3 employment history entries for the customer. Submitting records the sale and marks the vehicle as sold.
+\textbf{Sale Form} -> Records selling a car to a customer. You can pick an existing customer from the dropdown or enter a new one. Select an available vehicle, fill in the sale price and financing details, and add employment history for the customer. The car gets marked as sold automatically.
 
-\textbf{Warranty Form} (\texttt{forms/warranty\_form.php}): Select an existing sale from the dropdown; the vehicle and customer info auto-fills. Enter the warranty date, total cost, and monthly cost. Add up to 3 warranty items with type, dates, and costs. Click Submit to save.
+\textbf{Warranty Form} -> Adds warranty coverage to a sale. Pick a sale from the dropdown and the vehicle/customer info fills in automatically. Add up to 3 warranty items with type, dates, cost, and what is covered.
 
-\textbf{Payment Form} (\texttt{forms/payment\_form.php}): Select a customer from the dropdown (the page reloads to show their existing payments below). Enter the payment details: due date, paid date, amount, and bank account. If the payment is late (paid date after due date), the system automatically updates the customer's late payment stats.
+\textbf{Payment Form} -> Records a customer payment. Pick a customer first and the page shows their info and existing payments. Then fill in the payment details. If the payment is late the system updates the customer's late payment stats automatically.
 
-\textbf{Customer Form} (\texttt{forms/customer\_form.php}): Fill in the customer's name, phone, and address info. Existing customers are shown in a table below the form.
+\textbf{Customer Form} -> Adds a new customer. Fill in their info and click submit. All existing customers are shown in a table below the form.
 
-\textbf{Employee Form} (\texttt{forms/employee\_form.php}): Enter the employee's name, phone, and role (buyer, salesperson, or both). Existing employees are listed below.
+\textbf{Employee Form} -> Adds a new employee (buyer or salesperson). Same layout as the customer form.
 
-\section{Viewing Reports and Running Queries}
+\section{Viewing Reports}
 
-\subsection{Reports}
-
-The reports section has 6 different views. Each one pulls live data from the database and most have a filter option at the top. Navigate to any report from the home page.
+There are 6 reports. Most have a filter at the top.
 
 \begin{itemize}
-  \item \textbf{Current Inventory} (\texttt{reports/inventory.php}): Shows all cars currently available on the lot. You can filter by make using the text box at the top. Each row includes the vehicle info, purchase cost, repair costs, and total investment.
-
-  \item \textbf{Sales Summary} (\texttt{reports/sales\_report.php}): Lists all completed sales with profit calculations. There is a date range filter if you want to narrow it down. Profit is color-coded green for positive and red for negative.
-
-  \item \textbf{Payment History} (\texttt{reports/payment\_history.php}): Pick a customer from the dropdown to see all their payments. Late payments show up highlighted in red.
-
-  \item \textbf{Repair Costs} (\texttt{reports/repair\_summary.php}): Compares estimated vs actual repair costs for every repair in the system. Rows where the actual cost went over the estimate are highlighted.
-
-  \item \textbf{Active Warranties} (\texttt{reports/warranty\_report.php}): Shows all warranty items with their expiry dates. Rows are color-coded by urgency: red for expired, yellow for expiring within 30 days.
-
-  \item \textbf{Late Payments} (\texttt{reports/late\_payments.php}): Lists customers with late payments, sorted worst-first. Shows late payment count and average days late for each customer.
+  \item \textbf{Current Inventory} -> Cars available on the lot. You can filter by make.
+  \item \textbf{Sales Summary} -> All sales with profit calculations. Filter by date range.
+  \item \textbf{Payment History} -> Pick a customer to see all their payments. Late ones show up in red.
+  \item \textbf{Repair Costs} -> Estimated vs actual repair costs. Over-budget repairs are highlighted.
+  \item \textbf{Active Warranties} -> All warranty items with expiry dates. Red = expired, yellow = expiring soon.
+  \item \textbf{Late Payments} -> Customers with late payments, sorted worst first.
 \end{itemize}
 
-\subsection{Queries}
+\section{Running Queries}
 
-The queries page (\texttt{queries/queries.php}) has a dropdown with 12 business queries. Select one, click ``Run Query,'' and the results appear in a table below. The SQL for each query is also displayed on the page so you can see exactly what is running. For Query 3 (car search by make), there is an extra text input where you type the make you are looking for.
+Go to the queries page from the nav bar. There is a dropdown with 12 business queries. Pick one and click ``Run Query'' to see the results. The SQL is shown on the page so you can see what is running. Query 3 has an extra text box where you type a car make to search for.
 
 \section{Troubleshooting}
 
-If something is not working, check these things:
-
 \begin{itemize}
-  \item Make sure WAMP is running (green tray icon)
-  \item Both SQL files must be imported in the right order (\texttt{db\_setup.sql} first, then \texttt{db\_seed.sql})
-  \item The project folder should be inside \texttt{www/} for WAMP to serve it
-  \item If you see a database connection error, check that the \texttt{config.php} file has the right username/password for your MySQL install
+  \item If you get a database connection error, make sure MySQL is running
+  \item If using the startup script, make sure you have sudo access
+  \item If using WAMP, import \texttt{db\_setup.sql} before \texttt{db\_seed.sql} (order matters)
+  \item If pages are blank or show PHP errors, check that \texttt{config.php} has the right database credentials
 \end{itemize}
 
 \end{document}

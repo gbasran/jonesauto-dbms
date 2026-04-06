@@ -16,7 +16,7 @@ Professor: [INSERT PROFESSOR NAME HERE]
 
 JonesAuto is a used car dealership based in Lethbridge. They buy cars at auctions, fix them up, and resell them to customers. A lot of their sales are financed, so they've got to keep track of monthly payments on top of everything else. Right now they're doing all of this on paper, which honestly gets pretty messy once you're dealing with dozens of cars and customers at the same time.
 
-I built a database system to replace that whole paper-based workflow. It covers the full lifecycle of a car: buying it at auction, recording what repairs it needs, selling it to a customer, setting up warranty coverage, and tracking monthly payments. The prof talked in the first couple weeks about why a DBMS beats flat files, things like data redundancy, consistency problems, and not being able to query anything easily. This project is pretty much that idea applied to a real business. The system runs on PHP and MySQL, using WAMP as the local development server.
+I built a database system to replace that whole paper-based workflow. It covers the full lifecycle of a car: buying it at auction, recording what repairs it needs, selling it to a customer, setting up warranty coverage, and tracking monthly payments. We learned in class why a DBMS beats flat files, things like data redundancy, consistency problems, and not being able to query anything easily. This project is pretty much that idea applied to a real business. The system runs on PHP and MySQL on Linux, using PHP's built-in development server.
 
 The system has three main parts: input forms for entering data, output reports for pulling summaries, and a queries page for answering specific business questions. There are 6 forms, 6 reports, and 12 queries total. Seven of those queries use advanced SQL features like JOINs, subqueries, and GROUP BY with HAVING. I tried to cover a good range of what we learned in class throughout the semester.
 
@@ -65,7 +65,7 @@ I made these assumptions based on the business description in the project spec. 
 
 ## Stage 2: E-R Diagram and Database Schema
 
-The prof covered E-R diagrams in Weeks 10 and 11 using Chen notation, where you draw rectangles for entities, diamonds for relationships, and ovals for attributes. I designed the E-R diagram before writing any SQL, since mapping from an E-R model to relational tables is way more structured than jumping straight to CREATE TABLE statements. The prof's 4-step database design process was helpful here: understand the data needs, build a conceptual design with E-R, specify the operations, then do the logical and physical design.
+We covered E-R diagrams in class using Chen notation, where rectangles represent entities, diamonds represent relationships, and ovals represent attributes. I designed the E-R diagram before writing any SQL since I could map the E-R model directly to relational tables, giving a more structured approach than jumping straight to CREATE TABLE statements.
 
 [INSERT E-R DIAGRAM HERE]
 
@@ -102,13 +102,13 @@ Total: 14 foreign key constraints across the schema.
 
 ### Normalization
 
-The prof covered normalization in Weeks 12 and 13, going through 1NF, 2NF, 3NF, and BCNF. All of my tables are in 3NF. There aren't any partial dependencies since every primary key is a single-column AUTO_INCREMENT integer, which means 2NF is satisfied automatically. There aren't any transitive dependencies either: each non-key attribute depends directly on the primary key of its table, not on some other non-key column.
+We went through normalization in class covering 1NF, 2NF, 3NF, and BCNF. All of my tables are in 3NF. There aren't any partial dependencies since every primary key is a single-column AUTO_INCREMENT integer, which means 2NF is satisfied automatically. There aren't any transitive dependencies either: each non-key attribute depends directly on the primary key of its table, not on some other non-key column.
 
 That said, I did make two deliberate denormalizations. The first is `num_late_payments` and `avg_days_late` on the customers table. Technically I could calculate these from the payments table every time, but the payment form spec required showing them. Recalculating with an aggregate query on every page load seemed slow and unnecessary, so I stored them directly on the customer record. It's a trade-off between strict normalization and performance.
 
 The second is `customer_id` on the payments table. That info already exists on the sales table (which payments link to through sale_id), so it's redundant. But having it directly on payments means I don't need to JOIN through sales every time I want to look up a customer's payment history. It's another deliberate choice for query simplicity.
 
-The prof talked about how BCNF is stricter than 3NF, but for this project 3NF was the right target. The two denormalizations are documented and intentional.
+BCNF is stricter than 3NF, but for this project 3NF was the right target. The two denormalizations are documented and intentional.
 
 [INSERT RELATIONAL SCHEMA DIAGRAM HERE]
 
@@ -310,7 +310,7 @@ ORDER BY profit DESC
 
 ### Query 8: Which customers have late payments? (Advanced)
 
-Shows every late payment along with the customer name, vehicle info, and how many days late it was. The DATEDIFF function calculates how many days late each payment was. The prof covered date functions in the Week 6 lectures.
+Shows every late payment along with the customer name, vehicle info, and how many days late it was. The DATEDIFF function calculates how many days late each payment was. 
 
 **SQL:**
 ```sql
@@ -376,7 +376,7 @@ ORDER BY expiry_date
 
 ### Query 11: Where did repair costs go over budget? (Advanced)
 
-The HAVING clause filters groups to only show vehicles where actual repair costs exceeded estimates. The prof covered the difference between WHERE and HAVING in Week 6: WHERE filters individual rows before grouping, HAVING filters groups after. This query groups repairs by purchase and compares the totals.
+The HAVING clause filters groups to only show vehicles where actual repair costs exceeded estimates. The difference between WHERE and HAVING is that WHERE filters individual rows before grouping, HAVING filters groups after. This query groups repairs by purchase and compares the totals.
 
 **SQL:**
 ```sql
@@ -423,11 +423,11 @@ Here are the main assumptions I made and the reasoning behind the bigger design 
 
 1. **Used `condition_desc` instead of `condition`**: MySQL has `condition` as a reserved word, so I couldn't use it as a column name without backticks everywhere. Renaming to `condition_desc` was the simplest fix. It's not ideal but it's clear enough.
 
-2. **Denormalized late payment stats on customers table**: The `num_late_payments` and `avg_days_late` columns on the customers table are technically redundant since they could be calculated from the payments table each time. But the payment form spec required showing these values, and recalculating on every page load with an aggregate query would be slower. I chose to store them directly and update them whenever a late payment is recorded. The prof talked about how normalization trades some redundancy for query performance; this is one of those trade-offs.
+2. **Denormalized late payment stats on customers table**: The `num_late_payments` and `avg_days_late` columns on the customers table are technically redundant since they could be calculated from the payments table each time. But the payment form spec required showing these values, and recalculating on every page load with an aggregate query would be slower. I chose to store them directly and update them whenever a late payment is recorded. Normalization trades some redundancy for query performance, and this is one of those trade-offs.
 
 3. **customer_id duplicated on payments**: The payments table has customer_id even though you could get it by joining through sales. It's there so I can quickly look up all payments for a customer without an extra JOIN. Another deliberate denormalization.
 
-4. **AUTO_INCREMENT surrogate keys everywhere**: Every table uses an INT AUTO_INCREMENT primary key instead of composite or natural keys. It's simpler for foreign key references and avoids issues if natural values change. The prof covered candidate keys and primary key selection in Week 2; I went with surrogate keys because they're straightforward.
+4. **AUTO_INCREMENT surrogate keys everywhere**: Every table uses an INT AUTO_INCREMENT primary key instead of composite or natural keys. It's simpler for foreign key references and avoids issues if natural values change. I went with surrogate keys because they're straightforward.
 
 5. **Tables created in FK dependency order**: The db_setup.sql file creates tables in the right order (employees and vehicles first, then purchases, etc.) so the foreign key constraints don't fail. This way the script runs straight through without needing deferred constraint checks.
 
@@ -437,21 +437,21 @@ Here are the main assumptions I made and the reasoning behind the bigger design 
 
 ## What I Learned
 
-The biggest thing I took away from this project is how normalization actually works in practice. In lectures, the prof walked through functional dependencies and decomposition on paper (Weeks 12-13), but actually deciding where to denormalize for a real application was a different kind of challenge. It's one thing to identify a transitive dependency; it's another to decide whether the performance trade-off is worth it.
+The biggest thing I took away from this project is how normalization actually works in practice. In class we walked through functional dependencies and decomposition on paper, but actually deciding where to denormalize for a real application was a different kind of challenge. It's one thing to identify a transitive dependency; it's another to decide whether the performance trade-off is worth it.
 
 I'd never used PHP before this course. The procedural mysqli pattern from the tutorials turned out to be pretty straightforward once I got the hang of it. The hardest part was debugging SQL errors since PHP just gives you a generic error string and you have to figure out which part of the query is wrong.
 
-Drawing the E-R diagram first and then mapping it to relational tables (Week 11 material) made the schema design way more structured than if I'd just started creating tables. It forced me to think about relationships and cardinalities before writing any SQL.
+Drawing the E-R diagram first and then mapping it to relational tables made the schema design way more structured than if I'd just started creating tables. It forced me to think about relationships and cardinalities before writing any SQL.
 
 Setting up the foreign keys caught several data integrity issues during testing. I tried inserting a sale for a vehicle_id that didn't exist and MySQL blocked it. That's exactly what referential integrity is supposed to do, and it's way better than having orphaned records.
 
-Writing the advanced queries (especially Query 7 with the correlated subquery) pushed me to actually understand how JOINs and subqueries work together. The prof's examples in Weeks 6 and 8 used the banking database, but applying those patterns to a different domain helped it click.
+Writing the advanced queries (especially Query 7 with the correlated subquery) pushed me to actually understand how JOINs and subqueries work together. The examples from class used the banking database, but applying those patterns to a different domain helped it click.
 
 ## Future Improvements
 
 If I had more time or was building this for a real dealership, here's what I'd add:
 
-1. **User login system**: Right now anyone can access everything. A real system would need separate logins for buyers, salespeople, and managers, with different permissions for each. The prof mentioned security as one of the topics related to DB systems in Week 1.
+1. **User login system**: Right now anyone can access everything. A real system would need separate logins for buyers, salespeople, and managers, with different permissions for each. 
 
 2. **Search and sorting on reports**: The reports have basic filters but you can't sort by clicking column headers or search within results. Adding JavaScript for client-side sorting would make the reports much more usable.
 

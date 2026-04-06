@@ -12,9 +12,7 @@ $selected = isset($_GET['customer_id']) ? $_GET['customer_id'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Payment History</h2>
 

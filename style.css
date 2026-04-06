@@ -70,6 +70,8 @@ input[type="submit"]:hover {
     background-color: #4a7c9e;
     padding: 10px;
     margin-bottom: 15px;
+    display: flex;
+    align-items: center;
 }
 
 .nav a {
@@ -80,6 +82,45 @@ input[type="submit"]:hover {
 
 .nav a:hover {
     text-decoration: underline;
+}
+
+/* dropdown nav */
+.dropdown {
+    display: inline-block;
+    position: relative;
+    margin-right: 15px;
+}
+
+.dropdown-btn {
+    color: white;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #4a7c9e;
+    min-width: 180px;
+    z-index: 10;
+    top: 100%;
+    left: 0;
+    padding: 5px 0;
+    margin-top: 0;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 8px 15px;
+    margin-right: 0;
+}
+
+.dropdown-content a:hover {
+    background-color: #365d78;
+    text-decoration: none;
 }
 
 /* messages */
@@ -109,4 +150,92 @@ input[type="submit"]:hover {
 
 .overrun {
     color: #cc0000;
+}
+
+/* container */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* nav extras */
+.nav .site-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: white;
+    margin-right: 30px;
+}
+
+/* full width tables */
+table {
+    width: 100%;
+}
+
+/* form layout tables without borders */
+.form-table {
+    width: auto;
+}
+
+.form-table td {
+    border: none;
+    padding: 6px 10px;
+}
+
+.form-table tr:nth-child(even) {
+    background-color: transparent;
+}
+
+/* section headers */
+.page-header {
+    border-bottom: 2px solid #4a7c9e;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* stat cards for index page */
+.stats-row {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 4px;
+    flex: 1;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    color: #4a7c9e;
+    font-size: 1.8em;
+}
+
+.stat-card p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+/* two column layout */
+.two-col {
+    display: flex;
+    gap: 30px;
+}
+
+.two-col > div {
+    flex: 1;
+}
+
+/* footer */
+.footer {
+    text-align: center;
+    color: #888;
+    font-size: 0.85em;
+    margin-top: 40px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
 }

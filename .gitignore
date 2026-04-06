@@ -1,10 +1,36 @@
+# planning and ai
 .claude/
 .planning/
 CLAUDE.md
+
+# pdfs (except report deliverables)
 *.pdf
-!report/*.pdf
+!report/report.pdf
+!report/tutorial.pdf
+
+# prep guide (personal study, not for submission)
+report/prep-guide.*
+
+# windows junk
 *.Zone.Identifier
 *:Zone.Identifier
+
+# env and system
 .env
 .DS_Store
 *.log
+
+# dev scripts (not part of the project)
+test.sh
+startscript.sh
+
+# report build artifacts
+report/imgs/
+
+# latex aux files
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz

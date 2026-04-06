@@ -19,9 +19,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Record a Payment</h2>
 
@@ -29,7 +27,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
     <div class="success">Payment recorded!</div>
 <?php } ?>
 
-<table>
+<table class="form-table">
     <tr>
         <td>Customer:</td>
         <td>
@@ -58,7 +56,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 <form method="POST" action="../process/process_payment.php">
     <input type="hidden" name="customer_id" value="<?php echo $selected_customer; ?>">
 
-    <table>
+    <table class="form-table">
         <tr>
             <td>Sale:</td>
             <td>

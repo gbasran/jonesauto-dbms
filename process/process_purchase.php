@@ -53,9 +53,7 @@ if ($ok) {
 </head>
 <body>
 
-<div class="nav">
-    <a href="../index.html">Back to Home</a>
-</div>
+<?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <?php if ($ok) { ?>
     <div class="success">Purchase recorded!</div>

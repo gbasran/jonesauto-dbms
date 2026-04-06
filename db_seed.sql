@@ -1,5 +1,3 @@
-USE jonesauto;
-
 -- employees
 INSERT INTO employees (first_name, last_name, phone, role) VALUES
 ('Mike', 'Thompson', '403-555-0101', 'buyer'),
@@ -20,7 +18,7 @@ INSERT INTO vehicles (make, model, year, color, miles, condition_desc, book_pric
 ('Hyundai', 'Elantra', 2018, 'White', 88000, 'Fair', 11800.00, 'Sedan', 'Grey', 'available'),
 ('Honda', 'CR-V', 2019, 'Black', 71000, 'Good', 22500.00, 'SUV', 'Brown', 'available'),
 ('Chevrolet', 'Cruze', 2017, 'Red', 120000, 'Poor', 8500.00, 'Sedan', 'Black', 'sold'),
-('Toyota', 'Corolla', 2020, 'White', 38000, 'Excellent', 17800.00, 'Sedan', 'Grey', 'available'),
+('Toyota', 'Corolla', 2020, 'White', 38000, 'Excellent', 17800.00, 'Sedan', 'Grey', 'sold'),
 ('Ford', 'Focus', 2016, 'Blue', 135000, 'Fair', 7200.00, 'Sedan', 'Black', 'available'),
 ('Dodge', 'Ram 1500', 2019, 'Black', 82000, 'Good', 28500.00, 'Truck', 'Brown', 'sold'),
 ('Kia', 'Forte', 2021, 'Silver', 29000, 'Excellent', 16200.00, 'Sedan', 'Black', 'available'),
@@ -47,8 +45,8 @@ INSERT INTO purchases (vehicle_id, employee_id, purchase_date, location, seller_
 (14, 1, '2025-12-15', 'Calgary Auto Auction', 'Manheim Calgary', 1, 12800.00),
 (15, 2, '2025-10-05', 'Lethbridge', 'Private Seller', 0, 15500.00),
 (16, 1, '2025-08-12', 'Calgary Auto Auction', 'Manheim Calgary', 1, 10200.00),
-(17, 2, '2026-01-10', 'Red Deer Auction', 'Adesa Red Deer', 1, 24800.00),
-(18, 1, '2026-01-22', 'Calgary Auto Auction', 'Manheim Calgary', 1, 12500.00);
+(17, 2, '2026-04-01', 'Red Deer Auction', 'Adesa Red Deer', 1, 24800.00),
+(18, 1, '2026-04-03', 'Calgary Auto Auction', 'Manheim Calgary', 1, 12500.00);
 
 -- repairs
 INSERT INTO repairs (purchase_id, problem_num, description, est_cost, actual_cost) VALUES
@@ -113,7 +111,8 @@ INSERT INTO sales (vehicle_id, customer_id, employee_id, sale_date, total_due, d
 (7, 3, 3, '2025-09-20', 22800.00, 16000.00, 6800.00, 22800.00, 700.00),
 (10, 4, 5, '2025-08-10', 11200.00, 6100.00, 5100.00, 11200.00, 350.00),
 (13, 5, 4, '2025-10-25', 32500.00, 23000.00, 9500.00, 32500.00, 1000.00),
-(16, 6, 3, '2025-09-30', 16800.00, 11000.00, 5800.00, 16800.00, 500.00);
+(16, 6, 3, '2025-09-30', 16800.00, 11000.00, 5800.00, 16800.00, 500.00),
+(11, 1, 4, '2026-03-15', 19500.00, 14000.00, 5500.00, 19500.00, 600.00);
 
 -- warranties
 INSERT INTO warranties (sale_id, vehicle_id, customer_id, employee_id, warranty_sale_date, total_cost, monthly_cost) VALUES
@@ -124,11 +123,11 @@ INSERT INTO warranties (sale_id, vehicle_id, customer_id, employee_id, warranty_
 
 -- warranty items
 INSERT INTO warranty_items (warranty_id, warranty_type, start_date, length_months, cost, deductible, items_covered) VALUES
-(1, 'Drive-Train', '2025-08-25', 12, 800.00, 100.00, 'Engine, transmission, differential, drive shaft'),
-(1, 'Exterior', '2025-08-25', 12, 400.00, 50.00, 'Paint, body panels, bumpers'),
+(1, 'Drive-Train', '2025-08-25', 8, 800.00, 100.00, 'Engine, transmission, differential, drive shaft'),
+(1, 'Exterior', '2025-08-25', 9, 400.00, 50.00, 'Paint, body panels, bumpers'),
 (2, 'Drive-Train', '2025-10-15', 24, 1200.00, 75.00, 'Engine, transmission, differential, drive shaft, CV joints'),
 (2, 'Exterior', '2025-10-15', 12, 600.00, 50.00, 'Paint, body panels, bumpers, mirrors'),
-(3, 'Drive-Train', '2025-09-20', 12, 900.00, 100.00, 'Engine, transmission, differential'),
+(3, 'Drive-Train', '2025-09-20', 7, 900.00, 100.00, 'Engine, transmission, differential'),
 (4, 'Drive-Train', '2025-10-25', 24, 1500.00, 50.00, 'Engine, transmission, differential, drive shaft, transfer case'),
 (4, 'Exterior', '2025-10-25', 24, 500.00, 75.00, 'Paint, body panels'),
 (4, 'Interior', '2025-10-25', 12, 400.00, 100.00, 'Seats, dashboard, carpet, headliner');
@@ -158,4 +157,5 @@ INSERT INTO payments (customer_id, sale_id, payment_date, due_date, paid_date, a
 (6, 6, '2025-10-15', '2025-10-30', '2025-11-05', 320.00, 'ATB-7788'),
 (6, 6, '2025-11-15', '2025-11-30', '2025-12-08', 320.00, 'ATB-7788'),
 (6, 6, '2025-12-15', '2025-12-30', '2026-01-10', 320.00, 'ATB-7788'),
-(6, 6, '2026-01-15', '2026-01-30', '2026-01-29', 320.00, 'ATB-7788');
+(6, 6, '2026-01-15', '2026-01-30', '2026-01-29', 320.00, 'ATB-7788'),
+(1, 7, '2026-04-01', '2026-04-15', '2026-04-13', 300.00, 'TD-4521');
