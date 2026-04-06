@@ -26,6 +26,8 @@ startscript.sh
 
 # report build artifacts
 report/imgs/
+report/*.md
+report/*.tex
 
 # latex aux files
 *.aux
