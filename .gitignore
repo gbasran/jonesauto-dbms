@@ -2,6 +2,7 @@
 .planning/
 CLAUDE.md
 *.pdf
+!report/*.pdf
 *.Zone.Identifier
 *:Zone.Identifier
 .env

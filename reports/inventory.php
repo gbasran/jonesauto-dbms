@@ -66,8 +66,8 @@ $count = 0;
         <td><?php echo $row['model']; ?></td>
         <td><?php echo $row['year']; ?></td>
         <td><?php echo $row['color']; ?></td>
-        <td><?php echo number_format($row['mileage']); ?></td>
-        <td><?php echo $row['condition_rating']; ?></td>
+        <td><?php echo number_format($row['miles']); ?></td>
+        <td><?php echo $row['condition_desc']; ?></td>
         <td>$<?php echo number_format($row['book_price'], 2); ?></td>
         <td>$<?php echo number_format($row['price_paid'], 2); ?></td>
         <td>$<?php echo number_format($row['total_repairs'], 2); ?></td>
