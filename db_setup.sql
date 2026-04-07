@@ -157,57 +157,162 @@ CREATE TABLE operations_log (
     op_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- views for quick data checks
-CREATE VIEW v_active_inventory AS
-SELECT v.vehicle_id, v.make, v.model, v.year, v.color, v.miles, v.condition_desc,
-       v.book_price, v.style, v.status, COALESCE(p.price_paid, 0) as price_paid,
-       COALESCE(SUM(r.actual_cost), 0) as repair_costs
+-- ============================================================
+-- VIEWS: quick ways to check data without writing big queries
+-- ============================================================
+
+-- all customers including deleted ones, with status shown
+CREATE VIEW v_customers AS
+SELECT customer_id, first_name, last_name, phone, address, city, state, zip,
+       gender, dob, num_late_payments, avg_days_late, is_active,
+       CASE WHEN is_active = 1 THEN 'Active' ELSE 'Deleted' END as status
+FROM customers
+ORDER BY is_active DESC, last_name;
+
+-- all employees including deleted ones, with status shown
+CREATE VIEW v_employees AS
+SELECT employee_id, first_name, last_name, phone, role, is_active,
+       CASE WHEN is_active = 1 THEN 'Active' ELSE 'Deleted' END as status
+FROM employees
+ORDER BY is_active DESC, role, last_name;
+
+-- cars on the lot with what we paid and repair costs
+CREATE VIEW v_inventory AS
+SELECT v.vehicle_id, v.make, v.model, v.year, v.color, v.miles,
+       v.condition_desc, v.book_price, v.style, v.interior_color,
+       COALESCE(p.price_paid, 0) as price_paid,
+       COALESCE((SELECT SUM(r.actual_cost) FROM repairs r WHERE r.purchase_id = p.purchase_id), 0) as repair_costs,
+       COALESCE(p.price_paid, 0) + COALESCE((SELECT SUM(r.actual_cost) FROM repairs r WHERE r.purchase_id = p.purchase_id), 0) as total_cost
 FROM vehicles v
 LEFT JOIN purchases p ON v.vehicle_id = p.vehicle_id
-LEFT JOIN repairs r ON p.purchase_id = r.purchase_id
 WHERE v.status = 'available' AND v.is_active = 1
-GROUP BY v.vehicle_id, v.make, v.model, v.year, v.color, v.miles,
-         v.condition_desc, v.book_price, v.style, v.status, p.price_paid;
+ORDER BY v.make, v.model;
 
-CREATE VIEW v_sales_profit AS
-SELECT s.sale_id, s.sale_date, s.sale_price, v.make, v.model, v.year,
+-- all purchases with vehicle info
+CREATE VIEW v_purchases AS
+SELECT p.purchase_id, p.purchase_date, p.location, p.seller_dealer, p.is_auction, p.price_paid,
+       v.make, v.model, v.year, v.color,
+       CONCAT(e.first_name, ' ', e.last_name) as buyer
+FROM purchases p
+JOIN vehicles v ON p.vehicle_id = v.vehicle_id
+JOIN employees e ON p.employee_id = e.employee_id
+WHERE p.is_active = 1
+ORDER BY p.purchase_date DESC;
+
+-- all repairs with vehicle info and over/under budget
+CREATE VIEW v_repairs AS
+SELECT r.repair_id, v.make, v.model, v.year, p.purchase_date,
+       r.problem_num, r.description, r.est_cost, r.actual_cost,
+       (r.actual_cost - r.est_cost) as difference
+FROM repairs r
+JOIN purchases p ON r.purchase_id = p.purchase_id
+JOIN vehicles v ON p.vehicle_id = v.vehicle_id
+WHERE r.is_active = 1
+ORDER BY p.purchase_date DESC, r.problem_num;
+
+-- sales with profit calculation
+CREATE VIEW v_sales AS
+SELECT s.sale_id, s.sale_date, s.sale_price, s.total_due, s.down_payment,
+       s.financed_amount, s.commission,
+       CONCAT(v.year, ' ', v.make, ' ', v.model) as vehicle,
        CONCAT(c.first_name, ' ', c.last_name) as customer,
        CONCAT(e.first_name, ' ', e.last_name) as salesperson,
-       p.price_paid,
-       (SELECT COALESCE(SUM(r.actual_cost),0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as repairs,
+       p.price_paid as cost,
+       (SELECT COALESCE(SUM(r.actual_cost),0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as repair_costs,
        (s.sale_price - p.price_paid - (SELECT COALESCE(SUM(r.actual_cost),0) FROM repairs r WHERE r.purchase_id = p.purchase_id)) as profit
 FROM sales s
 JOIN vehicles v ON s.vehicle_id = v.vehicle_id
 JOIN customers c ON s.customer_id = c.customer_id
 JOIN employees e ON s.employee_id = e.employee_id
 JOIN purchases p ON v.vehicle_id = p.vehicle_id
-WHERE s.is_active = 1;
+WHERE s.is_active = 1
+ORDER BY s.sale_date DESC;
 
+-- all payments with late/on-time status
+CREATE VIEW v_payments AS
+SELECT pay.payment_id, CONCAT(c.first_name, ' ', c.last_name) as customer,
+       CONCAT(v.year, ' ', v.make, ' ', v.model) as vehicle,
+       pay.due_date, pay.paid_date, pay.amount, pay.bank_account,
+       DATEDIFF(pay.paid_date, pay.due_date) as days_late,
+       CASE WHEN pay.paid_date > pay.due_date THEN 'LATE' ELSE 'On Time' END as status
+FROM payments pay
+JOIN customers c ON pay.customer_id = c.customer_id
+JOIN sales s ON pay.sale_id = s.sale_id
+JOIN vehicles v ON s.vehicle_id = v.vehicle_id
+WHERE pay.is_active = 1
+ORDER BY pay.due_date DESC;
+
+-- customers with late payments sorted worst first
 CREATE VIEW v_late_customers AS
-SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) as name,
-       c.phone, c.num_late_payments, c.avg_days_late
-FROM customers c WHERE c.num_late_payments > 0 AND c.is_active = 1;
+SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) as customer,
+       c.phone, COUNT(pay.payment_id) as total_payments,
+       SUM(CASE WHEN pay.paid_date > pay.due_date THEN 1 ELSE 0 END) as late_count,
+       c.avg_days_late
+FROM customers c
+JOIN payments pay ON c.customer_id = pay.customer_id
+WHERE c.is_active = 1 AND pay.is_active = 1
+GROUP BY c.customer_id, c.first_name, c.last_name, c.phone, c.avg_days_late
+HAVING late_count > 0
+ORDER BY late_count DESC;
 
-CREATE VIEW v_warranty_status AS
+-- warranty items with expiry status
+CREATE VIEW v_warranties AS
 SELECT w.warranty_id, CONCAT(c.first_name, ' ', c.last_name) as customer,
-       CONCAT(v.year, ' ', v.make, ' ', v.model) as vehicle, wi.warranty_type,
-       DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH) as expiry,
-       DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) as days_left
+       CONCAT(v.year, ' ', v.make, ' ', v.model) as vehicle,
+       wi.warranty_type, wi.start_date, wi.length_months, wi.cost, wi.deductible,
+       wi.items_covered,
+       DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH) as expiry_date,
+       DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) as days_left,
+       CASE
+           WHEN DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) < 0 THEN 'EXPIRED'
+           WHEN DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) <= 30 THEN 'EXPIRING SOON'
+           ELSE 'ACTIVE'
+       END as warranty_status
 FROM warranty_items wi
 JOIN warranties w ON wi.warranty_id = w.warranty_id
 JOIN vehicles v ON w.vehicle_id = v.vehicle_id
 JOIN customers c ON w.customer_id = c.customer_id
-WHERE wi.is_active = 1;
+WHERE wi.is_active = 1 AND w.is_active = 1
+ORDER BY expiry_date;
 
+-- employment history for all active customers
+CREATE VIEW v_employment AS
+SELECT CONCAT(c.first_name, ' ', c.last_name) as customer,
+       eh.employer, eh.title, eh.supervisor_phone, eh.employer_address, eh.start_date
+FROM employment_history eh
+JOIN customers c ON eh.customer_id = c.customer_id
+WHERE eh.is_active = 1 AND c.is_active = 1
+ORDER BY c.last_name, eh.start_date DESC;
+
+-- operations log (most recent first)
 CREATE VIEW v_operations AS
-SELECT * FROM operations_log ORDER BY op_date DESC;
+SELECT log_id, table_name, record_id, operation, op_date
+FROM operations_log ORDER BY op_date DESC;
 
-CREATE VIEW v_deleted_records AS
-SELECT 'customer' as type, customer_id as id, CONCAT(first_name, ' ', last_name) as name
-FROM customers WHERE is_active = 0
+-- full customer audit trail: every operation done on each customer
+CREATE VIEW v_customer_history AS
+SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) as customer,
+       c.phone, c.city,
+       CASE WHEN c.is_active = 1 THEN 'Active' ELSE 'Deleted' END as current_status,
+       o.operation, o.op_date
+FROM customers c
+LEFT JOIN operations_log o ON o.table_name = 'customers' AND o.record_id = c.customer_id
+ORDER BY c.customer_id, o.op_date;
+
+-- full employee audit trail
+CREATE VIEW v_employee_history AS
+SELECT e.employee_id, CONCAT(e.first_name, ' ', e.last_name) as employee,
+       e.phone, e.role,
+       CASE WHEN e.is_active = 1 THEN 'Active' ELSE 'Deleted' END as current_status,
+       o.operation, o.op_date
+FROM employees e
+LEFT JOIN operations_log o ON o.table_name = 'employees' AND o.record_id = e.employee_id
+ORDER BY e.employee_id, o.op_date;
+
+-- soft-deleted records across all tables
+CREATE VIEW v_deleted AS
+SELECT 'customer' as type, customer_id as id, CONCAT(first_name, ' ', last_name) as name FROM customers WHERE is_active = 0
 UNION ALL
-SELECT 'employee', employee_id, CONCAT(first_name, ' ', last_name)
-FROM employees WHERE is_active = 0
+SELECT 'employee', employee_id, CONCAT(first_name, ' ', last_name) FROM employees WHERE is_active = 0
 UNION ALL
-SELECT 'vehicle', vehicle_id, CONCAT(year, ' ', make, ' ', model)
-FROM vehicles WHERE is_active = 0;
+SELECT 'vehicle', vehicle_id, CONCAT(year, ' ', make, ' ', model) FROM vehicles WHERE is_active = 0;
