@@ -12,6 +12,12 @@ $down_payment = $_POST['down_payment'] != '' ? $_POST['down_payment'] : 0;
 $financed = $_POST['financed_amount'] != '' ? $_POST['financed_amount'] : 0;
 $commission = $_POST['commission'] != '' ? $_POST['commission'] : 0;
 
+// make sure we have a vehicle and date
+if ($vehicle_id == '' || $sale_date == '') {
+    header("Location: ../forms/sale_form.php?msg=error");
+    exit;
+}
+
 // figure out the customer
 if ($customer_type == 'new') {
     $first = $_POST['first_name'];
@@ -36,7 +42,7 @@ $sql = "INSERT INTO sales (vehicle_id, customer_id, employee_id, sale_date, tota
 $ok = mysqli_query($conn, $sql);
 
 // add employment history
-for ($i = 1; $i <= 3; $i++) {
+for ($i = 1; isset($_POST['employer_' . $i]); $i++) {
     $employer = $_POST['employer_' . $i];
     $title = $_POST['emp_title_' . $i];
     $phone = $_POST['emp_phone_' . $i];

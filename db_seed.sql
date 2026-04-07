@@ -4,7 +4,8 @@ INSERT INTO employees (first_name, last_name, phone, role) VALUES
 ('Dave', 'Richards', '403-555-0102', 'buyer'),
 ('Sarah', 'Chen', '403-555-0201', 'salesperson'),
 ('Jake', 'Morrison', '403-555-0202', 'salesperson'),
-('Lisa', 'Blackwood', '403-555-0203', 'salesperson');
+('Lisa', 'Blackwood', '403-555-0203', 'salesperson'),
+('Ryan', 'Carter', '403-555-0301', 'both');
 
 -- vehicles (mix of available and sold)
 INSERT INTO vehicles (make, model, year, color, miles, condition_desc, book_price, style, interior_color, status) VALUES
@@ -25,7 +26,8 @@ INSERT INTO vehicles (make, model, year, color, miles, condition_desc, book_pric
 ('Subaru', 'Outback', 2018, 'Green', 93000, 'Good', 19800.00, 'SUV', 'Grey', 'available'),
 ('Honda', 'Accord', 2017, 'Grey', 105000, 'Fair', 14200.00, 'Sedan', 'Black', 'sold'),
 ('Toyota', 'Tacoma', 2020, 'White', 47000, 'Good', 30200.00, 'Truck', 'Grey', 'available'),
-('Mazda', '3', 2019, 'Red', 58000, 'Good', 16500.00, 'Sedan', 'Black', 'available');
+('Mazda', '3', 2019, 'Red', 58000, 'Good', 16500.00, 'Sedan', 'Black', 'available'),
+('Chrysler', 'Pacifica', 2020, 'White', 62000, 'Good', 22000.00, 'Van', 'Grey', 'available');
 
 -- purchases
 INSERT INTO purchases (vehicle_id, employee_id, purchase_date, location, seller_dealer, is_auction, price_paid) VALUES
@@ -46,7 +48,8 @@ INSERT INTO purchases (vehicle_id, employee_id, purchase_date, location, seller_
 (15, 2, '2025-10-05', 'Lethbridge', 'Private Seller', 0, 15500.00),
 (16, 1, '2025-08-12', 'Calgary Auto Auction', 'Manheim Calgary', 1, 10200.00),
 (17, 2, '2026-04-01', 'Red Deer Auction', 'Adesa Red Deer', 1, 24800.00),
-(18, 1, '2026-04-03', 'Calgary Auto Auction', 'Manheim Calgary', 1, 12500.00);
+(18, 1, '2026-04-03', 'Calgary Auto Auction', 'Manheim Calgary', 1, 12500.00),
+(19, 2, '2026-03-20', 'Lethbridge', 'Private Seller', 0, 17500.00);
 
 -- repairs
 INSERT INTO repairs (purchase_id, problem_num, description, est_cost, actual_cost) VALUES
@@ -119,7 +122,8 @@ INSERT INTO warranties (sale_id, vehicle_id, customer_id, employee_id, warranty_
 (1, 3, 1, 3, '2025-08-25', 1200.00, 108.00),
 (2, 5, 2, 4, '2025-10-15', 1800.00, 162.00),
 (3, 7, 3, 3, '2025-09-20', 900.00, 81.00),
-(5, 13, 5, 4, '2025-10-25', 2400.00, 216.00);
+(5, 13, 5, 4, '2025-10-25', 2400.00, 216.00),
+(7, 11, 1, 4, '2026-03-15', 800.00, 72.00);
 
 -- warranty items
 INSERT INTO warranty_items (warranty_id, warranty_type, start_date, length_months, cost, deductible, items_covered) VALUES
@@ -130,7 +134,9 @@ INSERT INTO warranty_items (warranty_id, warranty_type, start_date, length_month
 (3, 'Drive-Train', '2025-09-20', 7, 900.00, 100.00, 'Engine, transmission, differential'),
 (4, 'Drive-Train', '2025-10-25', 24, 1500.00, 50.00, 'Engine, transmission, differential, drive shaft, transfer case'),
 (4, 'Exterior', '2025-10-25', 24, 500.00, 75.00, 'Paint, body panels'),
-(4, 'Interior', '2025-10-25', 12, 400.00, 100.00, 'Seats, dashboard, carpet, headliner');
+(4, 'Interior', '2025-10-25', 12, 400.00, 100.00, 'Seats, dashboard, carpet, headliner'),
+(5, 'Drive-Train', '2026-03-15', 12, 500.00, 75.00, 'Engine, transmission, differential'),
+(5, 'Electrical', '2026-03-15', 6, 300.00, 50.00, 'Alternator, starter, wiring harness, battery');
 
 -- payments (mix of on-time and late)
 INSERT INTO payments (customer_id, sale_id, payment_date, due_date, paid_date, amount, bank_account) VALUES

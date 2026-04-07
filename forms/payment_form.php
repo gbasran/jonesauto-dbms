@@ -2,7 +2,7 @@
 include '../config.php';
 
 // get all customers for dropdown
-$sql = "SELECT customer_id, first_name, last_name FROM customers ORDER BY last_name";
+$sql = "SELECT customer_id, first_name, last_name FROM customers WHERE is_active = 1 ORDER BY last_name";
 $customers = mysqli_query($conn, $sql);
 
 // check if a customer was selected
@@ -25,6 +25,8 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 
 <?php if ($msg == 'success') { ?>
     <div class="success">Payment recorded!</div>
+<?php } else if ($msg == 'error') { ?>
+    <div class="error">Please fill in all required fields.</div>
 <?php } ?>
 
 <table class="form-table">
@@ -87,7 +89,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
         </tr>
         <tr>
             <td>Amount:</td>
-            <td><input type="text" name="amount"></td>
+            <td><input type="number" name="amount" step="0.01" min="0" required></td>
         </tr>
         <tr>
             <td>Bank Account:</td>

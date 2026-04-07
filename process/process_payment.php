@@ -10,6 +10,12 @@ $paid_date = $_POST['paid_date'];
 $amount = $_POST['amount'] != '' ? $_POST['amount'] : 0;
 $bank = $_POST['bank_account'];
 
+// check required fields
+if ($amount == 0 || $due_date == '' || $paid_date == '') {
+    header("Location: ../forms/payment_form.php?customer_id=$customer_id&msg=error");
+    exit;
+}
+
 // record the payment
 $sql = "INSERT INTO payments (customer_id, sale_id, payment_date, due_date, paid_date, amount, bank_account) VALUES ($customer_id, $sale_id, '$payment_date', '$due_date', '$paid_date', $amount, '$bank')";
 mysqli_query($conn, $sql);

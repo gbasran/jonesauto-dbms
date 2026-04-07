@@ -50,11 +50,30 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# allow external DB connections (for DBeaver etc)
+sudo sed -i 's/bind-address.*=.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf 2>/dev/null
+sudo service mysql restart 2>/dev/null
+sleep 1
+
 # kill any existing php server on 8000
 lsof -ti:8000 | xargs kill 2>/dev/null
 
 echo ""
-echo "=== Done! Opening server at http://localhost:8000 ==="
-echo "Press Ctrl+C to stop the server"
+echo "=== Database ready ==="
+echo "  Connect with DBeaver or MySQL Workbench:"
+echo "    Host: localhost  Port: 3306"
+echo "    User: root  Password: (blank)"
+echo "    Database: jonesauto"
+echo ""
+echo "  Useful views to query:"
+echo "    SELECT * FROM v_active_inventory;"
+echo "    SELECT * FROM v_sales_profit;"
+echo "    SELECT * FROM v_late_customers;"
+echo "    SELECT * FROM v_warranty_status;"
+echo "    SELECT * FROM v_operations;"
+echo "    SELECT * FROM v_deleted_records;"
+echo ""
+echo "=== Starting web server at http://localhost:8000 ==="
+echo "  Press Ctrl+C to stop"
 echo ""
 php -S localhost:8000

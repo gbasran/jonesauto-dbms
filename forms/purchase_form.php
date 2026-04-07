@@ -2,8 +2,10 @@
 include '../config.php';
 
 // grab the buyers from db
-$sql = "SELECT employee_id, first_name, last_name FROM employees WHERE role IN ('buyer', 'both') ORDER BY last_name";
+$sql = "SELECT employee_id, first_name, last_name FROM employees WHERE role IN ('buyer', 'both') AND is_active = 1 ORDER BY last_name";
 $buyers = mysqli_query($conn, $sql);
+
+$msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,6 +18,10 @@ $buyers = mysqli_query($conn, $sql);
 <?php $nav_prefix = '../'; include '../nav.php'; ?>
 
 <h2>Record a Vehicle Purchase</h2>
+
+<?php if ($msg == 'error') { ?>
+    <div class="error">Please fill in all required fields.</div>
+<?php } ?>
 
 <form method="POST" action="../process/process_purchase.php">
 
@@ -63,7 +69,7 @@ $buyers = mysqli_query($conn, $sql);
     </tr>
     <tr>
         <td>Year:</td>
-        <td><input type="number" name="year" required></td>
+        <td><input type="number" name="year" required min="1990" max="2027"></td>
     </tr>
     <tr>
         <td>Color:</td>
@@ -71,7 +77,7 @@ $buyers = mysqli_query($conn, $sql);
     </tr>
     <tr>
         <td>Miles:</td>
-        <td><input type="number" name="miles"></td>
+        <td><input type="number" name="miles" min="0"></td>
     </tr>
     <tr>
         <td>Condition:</td>
@@ -86,11 +92,11 @@ $buyers = mysqli_query($conn, $sql);
     </tr>
     <tr>
         <td>Book Price:</td>
-        <td><input type="text" name="book_price"></td>
+        <td><input type="number" name="book_price" step="0.01" min="0"></td>
     </tr>
     <tr>
         <td>Price Paid:</td>
-        <td><input type="text" name="price_paid" required></td>
+        <td><input type="number" name="price_paid" step="0.01" min="0" required></td>
     </tr>
     <tr>
         <td>Style:</td>
@@ -111,8 +117,8 @@ $buyers = mysqli_query($conn, $sql);
 </table>
 
 <!-- repair rows -->
-<h3>Repair Problems (up to 5)</h3>
-<table>
+<h3>Repair Problems</h3>
+<table id="repair_table">
     <tr>
         <th>#</th>
         <th>Description</th>
@@ -125,36 +131,55 @@ $buyers = mysqli_query($conn, $sql);
         <td><input type="text" name="repair_est_1"></td>
         <td><input type="text" name="repair_actual_1"></td>
     </tr>
-    <tr>
-        <td>2</td>
-        <td><input type="text" name="repair_desc_2"></td>
-        <td><input type="text" name="repair_est_2"></td>
-        <td><input type="text" name="repair_actual_2"></td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td><input type="text" name="repair_desc_3"></td>
-        <td><input type="text" name="repair_est_3"></td>
-        <td><input type="text" name="repair_actual_3"></td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td><input type="text" name="repair_desc_4"></td>
-        <td><input type="text" name="repair_est_4"></td>
-        <td><input type="text" name="repair_actual_4"></td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td><input type="text" name="repair_desc_5"></td>
-        <td><input type="text" name="repair_est_5"></td>
-        <td><input type="text" name="repair_actual_5"></td>
-    </tr>
 </table>
+<button type="button" onclick="addRepair()">+ Add Repair</button>
 
-<br>
+<br><br>
 <input type="submit" value="Record Purchase">
 
 </form>
+
+<hr>
+
+<!-- recent purchases for reference -->
+<h3>Recent Purchases</h3>
+<?php
+$sql = "SELECT v.year, v.make, v.model, v.color, v.status, p.purchase_date, p.price_paid, p.location FROM purchases p JOIN vehicles v ON p.vehicle_id = v.vehicle_id ORDER BY p.purchase_date DESC LIMIT 10";
+$recent = mysqli_query($conn, $sql);
+?>
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Vehicle</th>
+        <th>Color</th>
+        <th>Price Paid</th>
+        <th>Location</th>
+        <th>Status</th>
+    </tr>
+    <?php while ($row = mysqli_fetch_assoc($recent)) { ?>
+    <tr>
+        <td><?php echo $row['purchase_date']; ?></td>
+        <td><?php echo $row['year'] . ' ' . $row['make'] . ' ' . $row['model']; ?></td>
+        <td><?php echo $row['color']; ?></td>
+        <td>$<?php echo number_format($row['price_paid'], 2); ?></td>
+        <td><?php echo $row['location']; ?></td>
+        <td><?php echo $row['status']; ?></td>
+    </tr>
+    <?php } ?>
+</table>
+
+<script>
+var repairCount = 1;
+function addRepair() {
+    repairCount++;
+    var table = document.getElementById('repair_table');
+    var row = table.insertRow(-1);
+    row.innerHTML = '<td>' + repairCount + '</td>' +
+        '<td><input type="text" name="repair_desc_' + repairCount + '"></td>' +
+        '<td><input type="text" name="repair_est_' + repairCount + '"></td>' +
+        '<td><input type="text" name="repair_actual_' + repairCount + '"></td>';
+}
+</script>
 
 </body>
 </html>

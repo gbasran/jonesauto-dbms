@@ -10,13 +10,19 @@ $warranty_date = $_POST['warranty_sale_date'];
 $total_cost = $_POST['total_cost'] != '' ? $_POST['total_cost'] : 0;
 $monthly_cost = $_POST['monthly_cost'] != '' ? $_POST['monthly_cost'] : 0;
 
+// make sure we have a sale
+if ($sale_id == '') {
+    header("Location: ../forms/warranty_form.php?msg=error");
+    exit;
+}
+
 // create the warranty record
 $sql = "INSERT INTO warranties (sale_id, vehicle_id, customer_id, employee_id, warranty_sale_date, total_cost, monthly_cost) VALUES ($sale_id, $vehicle_id, $customer_id, $employee_id, '$warranty_date', $total_cost, $monthly_cost)";
 mysqli_query($conn, $sql);
 $warranty_id = mysqli_insert_id($conn);
 
-// add the warranty items
-for ($i = 1; $i <= 3; $i++) {
+// add the warranty items (loop until we run out of rows)
+for ($i = 1; isset($_POST['warranty_type_' . $i]); $i++) {
     $type = $_POST['warranty_type_' . $i];
     $start = $_POST['item_start_' . $i];
     $months = $_POST['item_months_' . $i];
@@ -35,5 +41,5 @@ for ($i = 1; $i <= 3; $i++) {
     }
 }
 
-header("Location: ../forms/warranty_form.php?msg=success");
+header("Location: ../forms/warranty_form.php?sale_id=$sale_id&msg=success");
 ?>

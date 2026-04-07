@@ -30,7 +30,7 @@ $make_filter = isset($_GET['make_filter']) ? $_GET['make_filter'] : '';
 
 <?php
 // grab available cars with cost info
-$sql = "SELECT v.*, p.price_paid, p.purchase_date, (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as total_repairs FROM vehicles v JOIN purchases p ON v.vehicle_id = p.vehicle_id WHERE v.status = 'available'";
+$sql = "SELECT v.*, p.price_paid, p.purchase_date, (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as total_repairs FROM vehicles v JOIN purchases p ON v.vehicle_id = p.vehicle_id WHERE v.status = 'available' AND v.is_active = 1";
 
 if ($make_filter != '') {
     $sql .= " AND v.make LIKE '%" . $make_filter . "%'";
@@ -54,6 +54,7 @@ $count = 0;
         <th>Price Paid</th>
         <th>Repair Costs</th>
         <th>Total Cost</th>
+        <th>Action</th>
     </tr>
     <?php while ($row = mysqli_fetch_assoc($result)) {
         $total_cost = $row['price_paid'] + $row['total_repairs'];
@@ -70,6 +71,7 @@ $count = 0;
         <td>$<?php echo number_format($row['price_paid'], 2); ?></td>
         <td>$<?php echo number_format($row['total_repairs'], 2); ?></td>
         <td>$<?php echo number_format($total_cost, 2); ?></td>
+        <td><a href="../forms/sale_form.php?vehicle_id=<?php echo $row['vehicle_id']; ?>">Sell</a></td>
     </tr>
     <?php } ?>
 </table>

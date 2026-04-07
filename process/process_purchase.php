@@ -18,6 +18,12 @@ $seller = $_POST['seller_dealer'];
 $is_auction = isset($_POST['is_auction']) ? 1 : 0;
 $buyer = $_POST['buyer'];
 
+// make sure required fields aren't empty
+if ($make == '' || $model == '' || $year == '' || $price_paid == 0) {
+    header("Location: ../forms/purchase_form.php?msg=error");
+    exit;
+}
+
 // add the vehicle first
 $sql = "INSERT INTO vehicles (make, model, year, color, miles, condition_desc, book_price, style, interior_color, status) VALUES ('$make', '$model', $year, '$color', $miles, '$condition', $book_price, '$style', '$interior_color', 'available')";
 $ok = mysqli_query($conn, $sql);
@@ -30,7 +36,7 @@ if ($ok) {
     $purchase_id = mysqli_insert_id($conn);
 
     // add any repairs they listed
-    for ($i = 1; $i <= 5; $i++) {
+    for ($i = 1; isset($_POST['repair_desc_' . $i]); $i++) {
         $desc = $_POST['repair_desc_' . $i];
         $est = $_POST['repair_est_' . $i];
         $actual = $_POST['repair_actual_' . $i];
@@ -63,7 +69,7 @@ if ($ok) {
 <?php } ?>
 
 <p><a href="../forms/purchase_form.php">Add another purchase</a></p>
-<p><a href="../index.html">Back to Home</a></p>
+<p><a href="../index.php">Back to Home</a></p>
 
 </body>
 </html>

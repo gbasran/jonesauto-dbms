@@ -15,7 +15,7 @@ include '../config.php';
 
 <?php
 // grab all repairs with vehicle info
-$sql = "SELECT v.make, v.model, v.year, p.purchase_date, r.problem_num, r.description, r.est_cost, r.actual_cost, (r.actual_cost - r.est_cost) as difference FROM repairs r JOIN purchases p ON r.purchase_id = p.purchase_id JOIN vehicles v ON p.vehicle_id = v.vehicle_id ORDER BY p.purchase_id, r.problem_num";
+$sql = "SELECT v.make, v.model, v.year, p.purchase_date, r.problem_num, r.description, r.est_cost, r.actual_cost, (r.actual_cost - r.est_cost) as difference FROM repairs r JOIN purchases p ON r.purchase_id = p.purchase_id JOIN vehicles v ON p.vehicle_id = v.vehicle_id WHERE r.is_active = 1 ORDER BY p.purchase_id, r.problem_num";
 
 $result = mysqli_query($conn, $sql);
 ?>

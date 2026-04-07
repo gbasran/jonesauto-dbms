@@ -31,14 +31,14 @@ $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 
 <?php
 // grab sales with profit calculation
-$sql = "SELECT s.*, v.make, v.model, v.year, CONCAT(c.first_name, ' ', c.last_name) as customer_name, CONCAT(e.first_name, ' ', e.last_name) as salesperson, p.price_paid, (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as repair_costs, (s.sale_price - p.price_paid - (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id)) as profit FROM sales s JOIN vehicles v ON s.vehicle_id = v.vehicle_id JOIN customers c ON s.customer_id = c.customer_id JOIN employees e ON s.employee_id = e.employee_id JOIN purchases p ON v.vehicle_id = p.vehicle_id";
+$sql = "SELECT s.*, v.make, v.model, v.year, CONCAT(c.first_name, ' ', c.last_name) as customer_name, CONCAT(e.first_name, ' ', e.last_name) as salesperson, p.price_paid, (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id) as repair_costs, (s.sale_price - p.price_paid - (SELECT COALESCE(SUM(r.actual_cost), 0) FROM repairs r WHERE r.purchase_id = p.purchase_id)) as profit FROM sales s JOIN vehicles v ON s.vehicle_id = v.vehicle_id JOIN customers c ON s.customer_id = c.customer_id JOIN employees e ON s.employee_id = e.employee_id JOIN purchases p ON v.vehicle_id = p.vehicle_id WHERE s.is_active = 1";
 
 if ($date_from != '' && $date_to != '') {
-    $sql .= " WHERE s.sale_date BETWEEN '$date_from' AND '$date_to'";
+    $sql .= " AND s.sale_date BETWEEN '$date_from' AND '$date_to'";
 } else if ($date_from != '') {
-    $sql .= " WHERE s.sale_date >= '$date_from'";
+    $sql .= " AND s.sale_date >= '$date_from'";
 } else if ($date_to != '') {
-    $sql .= " WHERE s.sale_date <= '$date_to'";
+    $sql .= " AND s.sale_date <= '$date_to'";
 }
 
 $sql .= " ORDER BY s.sale_date DESC";
@@ -61,6 +61,7 @@ $total_profit = 0;
         <th>Cost</th>
         <th>Repairs</th>
         <th>Profit</th>
+        <th>Action</th>
     </tr>
     <?php while ($row = mysqli_fetch_assoc($result)) {
         $profit = $row['profit'];
@@ -81,6 +82,7 @@ $total_profit = 0;
         <td>$<?php echo number_format($row['price_paid'], 2); ?></td>
         <td>$<?php echo number_format($row['repair_costs'], 2); ?></td>
         <td style="color: <?php echo $color; ?>; font-weight: bold;">$<?php echo number_format($profit, 2); ?></td>
+        <td><a href="../forms/warranty_form.php?sale_id=<?php echo $row['sale_id']; ?>">Add Warranty</a></td>
     </tr>
     <?php } ?>
     <tr style="font-weight: bold; background-color: #ddd;">

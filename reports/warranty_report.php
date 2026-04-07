@@ -17,7 +17,7 @@ include '../config.php';
 
 <?php
 // grab warranties with expiry info
-$sql = "SELECT w.*, v.make, v.model, v.year, CONCAT(c.first_name, ' ', c.last_name) as customer_name, wi.warranty_type, wi.start_date, wi.length_months, wi.cost, wi.deductible, wi.items_covered, DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH) as expiry_date, DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) as days_remaining FROM warranties w JOIN warranty_items wi ON w.warranty_id = wi.warranty_id JOIN vehicles v ON w.vehicle_id = v.vehicle_id JOIN customers c ON w.customer_id = c.customer_id ORDER BY expiry_date";
+$sql = "SELECT w.*, v.make, v.model, v.year, CONCAT(c.first_name, ' ', c.last_name) as customer_name, wi.warranty_type, wi.start_date, wi.length_months, wi.cost, wi.deductible, wi.items_covered, DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH) as expiry_date, DATEDIFF(DATE_ADD(wi.start_date, INTERVAL wi.length_months MONTH), CURDATE()) as days_remaining FROM warranties w JOIN warranty_items wi ON w.warranty_id = wi.warranty_id JOIN vehicles v ON w.vehicle_id = v.vehicle_id JOIN customers c ON w.customer_id = c.customer_id WHERE wi.is_active = 1 ORDER BY expiry_date";
 
 $result = mysqli_query($conn, $sql);
 ?>
@@ -34,6 +34,7 @@ $result = mysqli_query($conn, $sql);
         <th>Cost</th>
         <th>Deductible</th>
         <th>Items Covered</th>
+        <th>Action</th>
     </tr>
     <?php while ($row = mysqli_fetch_assoc($result)) {
         // color code based on expiry
@@ -56,6 +57,7 @@ $result = mysqli_query($conn, $sql);
         <td>$<?php echo number_format($row['cost'], 2); ?></td>
         <td>$<?php echo number_format($row['deductible'], 2); ?></td>
         <td><?php echo $row['items_covered']; ?></td>
+        <td><a href="../forms/warranty_form.php?sale_id=<?php echo $row['sale_id']; ?>">Add Warranty</a></td>
     </tr>
     <?php } ?>
 </table>

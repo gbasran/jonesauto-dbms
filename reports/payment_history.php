@@ -22,7 +22,7 @@ $selected = isset($_GET['customer_id']) ? $_GET['customer_id'] : '';
     <select name="customer_id" onchange="this.form.submit()">
         <option value="">-- Select Customer --</option>
         <?php
-        $cust_sql = "SELECT customer_id, first_name, last_name FROM customers ORDER BY last_name";
+        $cust_sql = "SELECT customer_id, first_name, last_name FROM customers WHERE is_active = 1 ORDER BY last_name";
         $cust_result = mysqli_query($conn, $cust_sql);
         while ($c = mysqli_fetch_assoc($cust_result)) {
             $sel = ($selected == $c['customer_id']) ? ' selected' : '';
@@ -34,7 +34,7 @@ $selected = isset($_GET['customer_id']) ? $_GET['customer_id'] : '';
 
 <?php if ($selected != '') {
     // grab payments for this customer
-    $sql = "SELECT p.*, DATEDIFF(p.paid_date, p.due_date) as days_late, v.make, v.model, v.year FROM payments p JOIN sales s ON p.sale_id = s.sale_id JOIN vehicles v ON s.vehicle_id = v.vehicle_id WHERE p.customer_id = " . $selected . " ORDER BY p.due_date";
+    $sql = "SELECT p.*, DATEDIFF(p.paid_date, p.due_date) as days_late, v.make, v.model, v.year FROM payments p JOIN sales s ON p.sale_id = s.sale_id JOIN vehicles v ON s.vehicle_id = v.vehicle_id WHERE p.customer_id = " . $selected . " AND p.is_active = 1 ORDER BY p.due_date";
 
     $result = mysqli_query($conn, $sql);
 ?>
@@ -65,6 +65,8 @@ $selected = isset($_GET['customer_id']) ? $_GET['customer_id'] : '';
     </tr>
     <?php } ?>
 </table>
+
+<p><a href="../forms/payment_form.php?customer_id=<?php echo $selected; ?>">Record Payment for this Customer</a></p>
 
 <?php } else { ?>
     <p>Select a customer to view their payment history.</p>
