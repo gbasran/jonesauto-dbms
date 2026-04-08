@@ -19,8 +19,9 @@ check_page() {
     local name="$2"
     local expect="$3"
 
-    local body=$(curl -s -L "$BASE$url")
-    local code=$(curl -s -L -o /dev/null -w "%{http_code}" "$BASE$url")
+    local response=$(curl -s -L -w "\n%{http_code}" "$BASE$url")
+    local code=$(echo "$response" | tail -1)
+    local body=$(echo "$response" | sed '$d')
 
     if [ "$code" -ge 500 ]; then
         fail "$name - HTTP $code"
