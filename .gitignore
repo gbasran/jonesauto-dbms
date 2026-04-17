@@ -32,3 +32,4 @@ report/*.tex
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+test-results
